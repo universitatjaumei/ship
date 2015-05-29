@@ -1,0 +1,25 @@
+development:
+    username: aplicacions
+    hostname: devel.uji.es
+    applications:
+        n0: [ 'sample' ]
+    tomcat:
+        username: tomcat
+        password: tomcat
+        port: 8080
+        home: /mnt/data/aplicacions/server/tomcat/apache-tomcat-7.0.29-apps
+    monit:
+        home: /mnt/data/aplicacions/cron/
+
+production:
+    username: deploy
+    hostname: 192.168.99.101
+    applications:
+        n0: [ 'sample' ]
+    tomcat:
+        user: tomcat
+        password: tomcat
+        port: 8080
+        home: /mnt/data/aplicacions/server/tomcat
+    monit:
+        home: /mnt/data/aplicacions/cron/
