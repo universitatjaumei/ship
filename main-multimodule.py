@@ -12,7 +12,7 @@ from maven import Maven
 
 ENVIRONMENT = "production"
 HOME = "/tmp/target"
-URL = "svn://localhost/repos/SAMPLE-MULTIMODULEx"
+URL = "svn://localhost/repos/SAMPLE-MULTIMODULE"
 PROJECT_NAME = "sample-multimodule"
 KEY = "smp"
 VERSION = "trunk"
