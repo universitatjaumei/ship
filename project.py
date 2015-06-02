@@ -1,71 +1,82 @@
-from validator import ValidationRuleExecutor
-from validator import PomXMLValidationRule
-from validator import CompiledPackageExistsValidationRule
-from validator import WebXmlValidationRule
-from validator import ConsoleLogValidationRule
 from module import Module
-from maven import Maven
-from subversion import Subversion
-from logger import getLogger
-
+from validator import *
+from deployer import Deployer
 
 class Project:
-    def __init__(self, project, version, executor, directory_structure_builder):
-        self.project_id = project.lower()
-        self.project_name = Subversion.get_project_name(self.project_id)
-        self.version = version.lower()
-        self.executor = executor
-        self.logger = getLogger()
-        self.maven = None
+    def __init__(self, home, name, config, source):
+        self.check_source_control(source)
 
-        self._create_directory_structure(directory_structure_builder)
-        self._checkout_project_code()
-        self._modules = []
+        self.home = home
+        self.name = name
+        self.config = config
+        self.source = source
 
-    def _create_directory_structure(self, directory_structure_builder):
-        self.directory_structure_builder = directory_structure_builder
-        self.directory_structure_builder.build(self.project_id)
+        self.modules = []
+        self.validation_rules = []
 
-    def _checkout_project_code(self):
-        self.subversion = Subversion(self.get_homedir(), self.project_id)
-        self.subversion.checkout(self.version)
+        self.source.checkout()
 
-    def get_project_id(self):
-        return self.project_id
+    def get_config(self):
+        return self.config
 
-    def build(self):
-        self.logger.info('[BUILD] Building project')
-
-        self.maven = Maven(self.get_homedir())
-        self.maven.build()
-
-        module_executor = ValidationRuleExecutor([ConsoleLogValidationRule,
-                                                  PomXMLValidationRule,
-                                                  CompiledPackageExistsValidationRule,
-                                                  WebXmlValidationRule])
-
-        if self.maven.is_multimodule():
-            for module_name in self.maven.list_modules():
-                module_maven = Maven(self.get_homedir() + "/" + module_name)
-                module = Module(module_executor, self, module_maven, module_name)
-                module.validate()
-                self._modules.append(module)
-        else:
-            module = Module(module_executor, self, self.maven)
-            module.validate()
-            self._modules.append(module)
+    def get_directory(self):
+        return self.home + "/" + self.name
 
     def get_modules(self):
-        return self._modules
+        return self.modules
 
-    def get_homedir(self):
-        return "%s/%s/%s" % (self.directory_structure_builder.get_deploy_home(),
-                             self.project_id.upper(),
-                             self.project_name)
+    def is_multimodule(self):
+        return len(self.modules) > 1
 
-    def get_app_properties(self):
-        return "/etc/uji/%s/app.properties" % self.project_id
+    def register_code_build(self, builder):
+        self.builder = builder
 
-    def run(self):
-        self.executor.execute(self, None)
-        self.build()
+    def register_validation_rules(self, validation_rules):
+        self.validation_rules = validation_rules
+
+    def build(self):
+        self.check_dependencies()
+
+        self.builder.build()
+        self.validate_quality_rules()
+
+        self.build_module_list()
+
+    def build_module_list(self):
+        if self.builder.is_multimodule():
+            for module in self.builder.list_modules():
+                self.builder.reload(self.home + "/" + self.name + "/" + module)
+                self.add_module(self.builder, module)
+        else:
+            self.add_module(self.builder)
+
+    def validate_quality_rules(self):
+        validator = ValidationRuleExecutor(self.validation_rules)
+        validator.validate(self)
+
+    def check_dependencies(self):
+        self.check_code_build()
+        self.check_validation_rules()
+
+    def check_validation_rules(self):
+        if self.validation_rules == None:
+            raise Exception("You must register a set of build validation rules")
+
+    def check_code_build(self):
+        if self.builder == None:
+            raise Exception("You must register a code build system")
+
+    def check_source_control(self, source):
+        if source == None:
+            raise Exception("You must register a source control system")
+
+    def deploy(self, environment):
+        deployer = Deployer(self)
+        deployer.deploy(environment)
+
+    def add_module(self, builder, submodule=None):
+        if builder.get_type() == None:
+            return
+
+        new_module = Module(self, builder.get_type(), builder.get_packaging(), builder.get_final_name(), submodule)
+        self.modules.append(new_module)

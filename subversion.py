@@ -1,53 +1,34 @@
-import logging
+import os, shutil
+
+from logger import ShipLogger
 from commands import local
 from errors import SVNException
 
-PROJECT_ROOT = "http://jira.uji.es/repos/uji"
-
-
 class Subversion:
-    def __init__(self, checkout_dir, project_id):
-        self.checkout_dir = checkout_dir
-        self.project_id = project_id
-        self.project_name = Subversion.get_project_name(self.project_id)
+    logger = ShipLogger.get_logger("INFO")
 
-    @staticmethod
-    def get_project_name(project_id):
-        svnroot = "%s/%s/uji-%s" % (PROJECT_ROOT, project_id.upper(), project_id.lower())
-        result = local("svn list " + svnroot)
+    def __init__(self, url, home, project, version="trunk"):
+        self.url = url
+        self.home = home
+        self.project = project
+        self.version = version
 
-        if result.return_code == 0:
-            return "uji-%s" % project_id.lower()
+    def checkout(self):
+        self.logger.info("Checking out %s version from source control" % self.version)
+
+        if os.path.isdir(self.home):
+           self.logger.warning("Cleaning work directory. Existing dir found")
+           shutil.rmtree(self.home)
+
+        if self.version == "trunk":
+           result = local("svn co " + self.url + "/" + self.version + " " + self.home + "/" + self.project)
         else:
-            svnroot = "%s/%s/uji-%s-base" % (PROJECT_ROOT, project_id.upper(), project_id.lower())
-            result = local("svn list " + svnroot)
-
-            if result.return_code == 0:
-                return "uji-%s-base" % project_id.lower()
-            else:
-                raise SVNException()
-
-    def get_svnrepo_url(self, version):
-        url_base = PROJECT_ROOT + "/" + self.project_id.upper() + "/" + self.project_name
-        project_version = "trunk"
-
-        if version != "trunk":
-            project_version = "tags/%s_%s" % (self.project_name, version)
-
-        return "%s/%s" % (url_base, project_version)
-
-    def checkout(self, version):
-        logging.info("[SCM] Checking out %s version" % version)
-
-        result = local("svn co " + self.get_svnrepo_url(version) + " " + self.checkout_dir)
+           result = local("svn co " + self.url + "/tags/" + self.version + " " + self.home + "/" + self.project)
 
         if result.return_code != 0:
-            logging.info("Single project repository not found, trying multi-module repository...")
-            result = local("svn co " + self.get_svnrepo_url(version) + " " + self.checkout_dir)
-
-            if result.return_code != 0:
-                raise SVNException()
+           self.logger.error("Project repository not found in SVN with URL %s" % self.url)
+           raise SVNException()
 
 if __name__ == "__main__":
-    subversion = Subversion("/tmp/LOD/uji-lod", "LOD")
-    subversion.checkout("trunk")
+    subversion = Subversion("svn://localhost/repos/SAMPLE", "/tmp/SAMPLE")
+    subversion.checkout()
