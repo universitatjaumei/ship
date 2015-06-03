@@ -1,20 +1,61 @@
 from module import Module
 from validator import *
 from deployer import Deployer
+from maven import Maven
+from subversion import Subversion
 
-class Project:
-    def __init__(self, home, name, config, source):
-        self.check_source_control(source)
-
+class ProjectBuilder:
+    def __init__(self, home, name, config):
         self.home = home
         self.name = name
         self.config = config
-        self.source = source
+
+        self.source = None
+        self.rules = None
+        self.builder = None
+
+    def with_subversion(self, url, version):
+        self.source = Subversion(url, self.home, self.name, version)
+        self.source.checkout()
+        return self
+
+    def with_maven(self):
+        self._check_source_control()
+
+        self.builder = Maven(self.home + "/" + self.name)
+        return self
+
+    def with_validation_rules(self, rules):
+        self.rules = rules
+        return self
+
+    def build(self):
+        self.project = Project(self.home, self.name, self.config)
+        self.project.register_code_build(self.builder)
+        self.project.register_validation_rules(self.rules)
+
+        self.project.build()
+
+        return self
+
+    def deploy(self, environment):
+        deployer = Deployer(self.project)
+        deployer.deploy(environment)
+
+        return self.project
+
+    def _check_source_control(self):
+        if self.source is None:
+            raise Exception("You must register a source control system")
+
+class Project:
+    def __init__(self, home, name, config):
+        self.home = home
+        self.name = name
+        self.config = config
 
         self.modules = []
         self.validation_rules = []
-
-        self.source.checkout()
 
     def get_config(self):
         return self.config
@@ -46,9 +87,9 @@ class Project:
         if self.builder.is_multimodule():
             for module in self.builder.list_modules():
                 self.builder.reload(self.home + "/" + self.name + "/" + module)
-                self.add_module(self.builder, module)
+                self._add_module(self.builder, module)
         else:
-            self.add_module(self.builder)
+            self._add_module(self.builder)
 
     def validate_quality_rules(self):
         validator = ValidationRuleExecutor(self.validation_rules)
@@ -66,15 +107,7 @@ class Project:
         if self.builder == None:
             raise Exception("You must register a code build system")
 
-    def check_source_control(self, source):
-        if source == None:
-            raise Exception("You must register a source control system")
-
-    def deploy(self, environment):
-        deployer = Deployer(self)
-        deployer.deploy(environment)
-
-    def add_module(self, builder, submodule=None):
+    def _add_module(self, builder, submodule=None):
         if builder.get_type() == None:
             return
 

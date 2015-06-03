@@ -3,12 +3,9 @@
 import traceback
 
 from logger import ShipLogger
-
-from project import Project
+from project import ProjectBuilder
 from validator import *
-from subversion import Subversion
 from errors import SVNException, ProjectIdNotFoundException
-from maven import Maven
 
 ENVIRONMENT = "production"
 HOME = "/tmp/target"
@@ -23,22 +20,15 @@ if __name__ == "__main__":
     try:
         logger.success("Initializing project construction")
 
-        source = Subversion(URL, HOME, PROJECT_NAME, VERSION)
+        rules = [ ConfigFileValidationRule, ConsoleLogValidationRule,
+                  PomXMLValidationRule, CompiledPackageExistsValidationRule ]
 
-        project = Project(HOME, PROJECT_NAME, "/etc/uji/%s/app.properties" % KEY, source)
-
-        builder = Maven(HOME + "/" + PROJECT_NAME)
-        project.register_code_build(builder)
-
-        project.register_validation_rules([
-            ConfigFileValidationRule,
-            ConsoleLogValidationRule,
-            PomXMLValidationRule,
-            CompiledPackageExistsValidationRule
-        ])
-
-        project.build()
-        project.deploy(ENVIRONMENT)
+        project = ProjectBuilder(HOME, PROJECT_NAME, "/etc/uji/%s/app.properties" % KEY) \
+            .with_subversion(URL, VERSION) \
+            .with_maven() \
+            .with_validation_rules(rules) \
+            .build() \
+            .deploy(ENVIRONMENT)
 
         logger.success("Finished succesfully!!")
     except SVNException as e:
