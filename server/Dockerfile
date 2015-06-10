@@ -17,8 +17,7 @@ RUN cat /tmp/authorized_keys >> /root/.ssh/authorized_keys && rm -f /tmp/authori
 
 # Install Java
 
-RUN wget "http://aris.si.uji.es:8080/jdk-8u45-linux-x64.tar.gz" -O /tmp/jdk.tar.gz \
-   && tar xvfz /tmp/jdk.tar.gz -C /usr/share
+RUN wget --no-check-certificate --no-cookies --header "Cookie: oraclelicense=accept-securebackup-cookie" http://download.oracle.com/otn-pub/java/jdk/8u45-b14/jdk-8u45-linux-x64.tar.gz -O /tmp/jdk.tar.gz && tar xvfz /tmp/jdk.tar.gz -C /usr/share
 
 # Install Tomcat
 
