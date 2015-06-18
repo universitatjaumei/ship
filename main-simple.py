@@ -2,10 +2,10 @@
 
 import traceback
 
-from logger import ShipLogger
-from project import ProjectBuilder
-from validator import *
-from errors import SVNException, ProjectIdNotFoundException
+from ship.logger import ShipLogger
+from ship.project import ProjectBuilder
+from ship.validator import *
+from ship.errors import SVNException, ProjectIdNotFoundException
 
 ENVIRONMENT = "production"
 HOME = "/tmp/target"
