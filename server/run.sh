@@ -8,5 +8,5 @@ docker run -e SVN_REPONAME=repos -p 3690:3690 -d --name ship-svn erikxiv/subvers
 
 sleep 1
 
-../import-project-to-svn.sh SAMPLE sample
-../import-project-to-svn.sh SAMPLE-MULTIMODULE sample-multimodule
+./import-project-to-svn.sh SAMPLE sample
+./import-project-to-svn.sh SAMPLE-MULTIMODULE sample-multimodule
