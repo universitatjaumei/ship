@@ -17,11 +17,11 @@ RUN cat /tmp/authorized_keys >> /root/.ssh/authorized_keys && rm -f /tmp/authori
 
 # Install Java
 
-RUN wget --no-check-certificate --no-cookies --header "Cookie: oraclelicense=accept-securebackup-cookie" http://download.oracle.com/otn-pub/java/jdk/8u45-b14/jdk-8u45-linux-x64.tar.gz -O /tmp/jdk.tar.gz && tar xvfz /tmp/jdk.tar.gz -C /usr/share
+RUN wget -q --no-check-certificate --no-cookies --header "Cookie: oraclelicense=accept-securebackup-cookie" http://download.oracle.com/otn-pub/java/jdk/8u45-b14/jdk-8u45-linux-x64.tar.gz -O /tmp/jdk.tar.gz && tar xvfz /tmp/jdk.tar.gz -C /usr/share
 
 # Install Tomcat
 
-RUN wget "http://apache.rediris.es/tomcat/tomcat-8/v8.0.26/bin/apache-tomcat-8.0.26.tar.gz" -O /tmp/tomcat.tar.gz \
+RUN wget -q "http://ftp.cixug.es/apache/tomcat/tomcat-8/v8.0.26/bin/apache-tomcat-8.0.26.tar.gz" -O /tmp/tomcat.tar.gz \
    && tar xvfz /tmp/tomcat.tar.gz -C /usr/share/
 
 RUN echo "<?xml version=\"1.0\" encoding=\"utf-8\"?>" > /usr/share/apache-tomcat-8.0.26/conf/tomcat-users.xml \
