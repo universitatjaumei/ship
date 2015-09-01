@@ -1,13 +1,21 @@
-production:
-    user: root
+sample:
+  user: root
+  host: localhost
+  port: 2222
+  java: 8
+  tomcat:
     host: localhost
-    port: 2222
-    tomcat:
-        host: localhost
-        port: 8888
-        user: tomcat
-        password: tomcat
-        home: /usr/share/apache-tomcat-8.0.23
-    monit:
-        host: localhost
-        home: /mnt/data/aplicacions/cron/
+    version: 8.0.22
+    base: /tmp
+    memory: 198
+    username: tomcat
+    password: tomcat
+    ports:
+      http: 8101
+      ajp: 6101
+      jmx: 9601
+      shutdown: 7101
+      redirect: 9101
+  monit:
+    host: localhost
+    home: /mnt/data/aplicacions/cron/
