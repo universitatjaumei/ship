@@ -7,7 +7,7 @@ from project import ProjectBuilder
 from validator import *
 from errors import SVNException, ProjectIdNotFoundException
 
-ENVIRONMENT = "production"
+ENVIRONMENT = "sample"
 HOME = "/tmp/target"
 URL = "svn://localhost/repos/SAMPLE-MULTIMODULE"
 PROJECT_NAME = "sample-multimodule"

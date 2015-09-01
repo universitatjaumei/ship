@@ -11,7 +11,7 @@ class TomcatDeployer:
         self.environment = environment
 
     def deploy(self, module):
-        tomcat = Tomcat(self.environment.get_catalina_home(),
+        tomcat = Tomcat(self.environment.get_tomcat_home(),
                         self.environment.get_tomcat_username(),
                         self.environment.get_tomcat_password(),
                         self.environment.get_tomcat_hostname(),

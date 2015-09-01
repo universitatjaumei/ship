@@ -1,6 +1,7 @@
 import fabric.operations
 import fabric.api
 import fabric.utils
+import fabric.contrib.files
 
 DEBUG = True
 
@@ -35,8 +36,14 @@ def put(local_path, remote_path):
 def puts(text):
     fabric.utils.puts(text)
 
+def get(remote_path, local_path):
+    fabric.api.get(remote_path=remote_path, local_path=local_path)
+
 def abort(msg):
     fabric.utils.abort(msg)
+
+def directory_exists(dirname):
+    return fabric.contrib.files.exists(dirname)
 
 def sudo(command):
     with _get_settings():

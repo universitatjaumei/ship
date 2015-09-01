@@ -17,7 +17,7 @@ class JDBCUrlRemoteCheck:
         JDBCURL = """uji.db.jdbcUrl=jdbc:oracle:thin:@(DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = 150.128.192.222)(PORT = 1521)) (ADDRESS = (PROTOCOL = TCP)(HOST = 150.128.192.223)(PORT = 1521)) (ADDRESS = (PROTOCOL = TCP)(HOST = 150.128.192.224)(PORT = 1521)) (LOAD_BALANCE = yes) (FAILOVER = yes)) (CONNECT_DATA = (SERVICE_NAME = ujiapps.uji.es)))"""
 
         if app_properties.find(JDBCURL) == -1:
-            raise Exception("The JDBCUrl syntax in remote %s environment /etc/uji/%s/app.properties is not valid." % (environment.get_environment_id(), project.get_project_id()))
+            raise Exception("The JDBCUrl syntax in remote environment /etc/uji/%s/app.properties is not valid." % project.get_project_id())
 
 class ConsoleLogValidationRule:
     def execute(self, project, module):
