@@ -1,44 +1,62 @@
 import yaml
 
 class Environment:
-    def __init__(self, environment, project_id):
+    def __init__(self, app):
         f = open('environment.yml')
         data = yaml.safe_load(f)
         f.close()
 
-        self.id = environment
-        self.data = data[environment]
-        self.project_id = project_id
-
-    def get_environment_id(self):
-        return self.id
+        self.app = app
+        self.config = data[app]
 
     def get_remote_connection_string(self):
-        return self.data["user"] + "@" + self.data["host"]
+        return self.config["user"] + "@" + self.config["host"]
 
     def get_remote_host(self):
-        return self.data["host"]
+        return self.config["host"]
 
     def get_remote_port(self):
-        return self.data["port"]
+        return self.config["port"]
 
-    def get_catalina_home(self):
-        return self.data["tomcat"]["home"]
+    def get_tomcat_host(self):
+        return self.config["tomcat"]["host"]
+
+    def get_tomcat_version(self):
+        return self.config["tomcat"]["version"]
+
+    def get_tomcat_base(self):
+        return self.config["tomcat"]["base"]
+
+    def get_tomcat_home(self):
+        return self.get_tomcat_base() + "/" + self.app
+
+    def get_tomcat_memory(self):
+        value = self.config["tomcat"]["memory"]
+        return "-Xmx%sM -Xms%sM" % (value, value)
 
     def get_tomcat_username(self):
-        return self.data["tomcat"]["user"]
+        return self.config["tomcat"]["username"]
 
     def get_tomcat_password(self):
-        return self.data["tomcat"]["password"]
+        return self.config["tomcat"]["password"]
 
-    def get_tomcat_hostname(self):
-        return self.data["tomcat"]["host"]
+    def get_tomcat_http_port(self):
+        return self.config["tomcat"]["ports"]["http"]
 
-    def get_tomcat_port(self):
-        return self.data["tomcat"]["port"]
+    def get_tomcat_ajp_port(self):
+        return self.config["tomcat"]["ports"]["ajp"]
 
-    def get_monit_home(self):
-        return self.data["monit"]["home"]
+    def get_tomcat_jmx_port(self):
+        return self.config["tomcat"]["ports"]["jmx"]
+
+    def get_tomcat_shutdown_port(self):
+        return self.config["tomcat"]["ports"]["shutdown"]
+
+    def get_tomcat_redirect_port(self):
+        return self.config["tomcat"]["ports"]["redirect"]
 
     def get_tomcat_deploy_directory(self):
-        return self.data["tomcat"]["home"] + "/webapps"
+        return self.get_tomcat_home() + "/webapps"
+
+    def get_monit_home(self):
+        return self.config["monit"]["home"]

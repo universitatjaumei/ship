@@ -7,7 +7,7 @@ from ship.project import ProjectBuilder
 from ship.validator import *
 from ship.errors import SVNException, ProjectIdNotFoundException
 
-ENVIRONMENT = "production"
+ENVIRONMENT = "sample"
 HOME = "/tmp/target"
 URL = "svn://localhost/repos/SAMPLE"
 PROJECT_NAME = "sample"

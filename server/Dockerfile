@@ -21,7 +21,7 @@ RUN wget -q --no-check-certificate --no-cookies --header "Cookie: oraclelicense=
 
 # Install Tomcat
 
-RUN wget -q "http://apache.rediris.es/tomcat/tomcat-8/v8.0.26/bin/apache-tomcat-8.0.26.tar.gz" -O /tmp/tomcat.tar.gz \
+RUN wget -q "http://ftp.cixug.es/apache/tomcat/tomcat-8/v8.0.26/bin/apache-tomcat-8.0.26.tar.gz" -O /tmp/tomcat.tar.gz \
    && tar xvfz /tmp/tomcat.tar.gz -C /usr/share/
 
 RUN echo "<?xml version=\"1.0\" encoding=\"utf-8\"?>" > /usr/share/apache-tomcat-8.0.26/conf/tomcat-users.xml \
