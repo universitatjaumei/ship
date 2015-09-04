@@ -1,0 +1,13 @@
+production:
+    user: root
+    host: ship-deploy-server
+    port: 22
+    tomcat:
+        host: ship-deploy-server
+        port: 8888
+        user: tomcat
+        password: tomcat
+        home: /usr/share/apache-tomcat-8.0.26
+    monit:
+        host: ship-webapp-server
+        home: /mnt/data/aplicacions/cron/
