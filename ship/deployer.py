@@ -14,7 +14,7 @@ class TomcatDeployer:
         tomcat = Tomcat(self.environment.get_tomcat_home(),
                         self.environment.get_tomcat_username(),
                         self.environment.get_tomcat_password(),
-                        self.environment.get_tomcat_hostname(),
+                        self.environment.get_tomcat_host(),
                         self.environment.get_tomcat_port(),
                         self.environment.get_tomcat_deploy_directory())
 
@@ -62,6 +62,6 @@ class Deployer:
 
         for module in self.project.get_modules():
             print module.get_type(), module.get_packaging(), module.get_name()
-            deploy_environment = Environment(environment, module.get_name())
+            deploy_environment = Environment(module.get_name())
             set_environment(deploy_environment)
             self._deploy(module, deploy_environment)
