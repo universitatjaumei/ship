@@ -18,8 +18,8 @@ class TomcatDeployer:
                         self.environment.get_tomcat_port(),
                         self.environment.get_tomcat_deploy_directory())
 
-        tomcat.shutdown()
         tomcat.deploy(module)
+        tomcat.shutdown()
         tomcat.startup()
 
 class MonitDeployer:
