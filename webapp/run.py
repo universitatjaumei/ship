@@ -17,6 +17,16 @@ PROJECT_NAME = "sample"
 KEY = "smp"
 VERSION = "trunk"
 
+def get_app_acronyms():
+    req = urllib2.Request("http://infra01.uji.es:4001/v2/keys/ujiapps/apps/all.yaml")
+    response = urllib2.urlopen(req)
+    data = simplejson.load(response)
+    yaml_text = data.get('node').get('value')
+    data = yaml.load(yaml_text)
+    apps = [ app.upper() for app in data.keys() ]
+    apps.sort()
+    return apps
+
 @app.route("/deploy", methods=["POST"])
 def hello():
     environment = request.args.get("environment") #"production"
@@ -32,12 +42,16 @@ def hello():
         rules = [ ConfigFileValidationRule, ConsoleLogValidationRule,
                   PomXMLValidationRule, CompiledPackageExistsValidationRule ]
 
-        project = ProjectBuilder(HOME, PROJECT_NAME, "/etc/uji/%s/app.properties" % KEY) \
-            .with_subversion(URL, VERSION) \
-            .with_maven() \
-            .with_validation_rules(rules) \
-            .build() \
-            .deploy(ENVIRONMENT)
+        try:
+            project = ProjectBuilder(HOME, PROJECT_NAME, "/etc/uji/%s/app.properties" % KEY) \
+                .with_subversion(URL, VERSION) \
+                .with_maven() \
+                .with_validation_rules(rules) \
+                .build() \
+                .deploy(ENVIRONMENT)
+        except SystemExit as e:
+            app.logger.error(traceback.format_exc())
+            return 'faillll'
 
         app.logger.info("Finished succesfully!!")
     except SVNException as e:
@@ -57,7 +71,7 @@ def hello():
 
 @app.route("/", methods=["GET"])
 def index():
-    apps = [ 'SAMPLE' ]
+    apps = get_app_acronyms()
     return render_template("index.html", apps=apps)
 
 
