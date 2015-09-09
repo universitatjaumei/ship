@@ -27,7 +27,13 @@ class Tomcat:
         self.memory = config.get_tomcat_memory()
 
     def startup(self):
-        run(self.home + "/bin/startup.sh")
+        result = run(self.home + "/bin/startup.sh")
+
+        if result.return_code != 0:
+            error_message = "The server could not be started"
+            self.logger.error(error_message)
+            abort(error_message)
+            return
 
         times = 1
 
@@ -52,6 +58,7 @@ class Tomcat:
 
         run("rm -rf " + self.home + "/work")
         run("rm -rf " + self.home + "/webapps/" + appname)
+
         put(local_path=warfile, remote_path=self.deploy_dir)
 
     def install(self):
