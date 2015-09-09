@@ -65,7 +65,7 @@ class Deployer:
         deployer = DeployerFactory.build(module.get_type(), environment, params)
         deployer.deploy(module)
 
-    def deploy(self, environment):
+    def deploy(self):
         #self.validate(deploy_environment)
 
         for module in self.project.get_modules():

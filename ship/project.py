@@ -43,10 +43,9 @@ class ProjectBuilder:
 
         return self
 
-    def deploy(self, environment):
+    def deploy(self):
         deployer = Deployer(self.project)
-        deployer.deploy(environment)
-
+        deployer.deploy()        
         return self.project
 
     def _check_source_control(self):
