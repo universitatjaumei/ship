@@ -13,6 +13,7 @@ class ProjectBuilder:
         self.source = None
         self.rules = None
         self.builder = None
+        self.deploy_params = {}
 
     def with_subversion(self, url, version):
         self.source = Subversion(url, self.home, self.name, version)
@@ -25,12 +26,16 @@ class ProjectBuilder:
         self.builder = Maven(self.home + "/" + self.name)
         return self
 
+    def with_tomcat(self, params={}):
+        self.deploy_params['tomcat'] = params
+        return self
+
     def with_validation_rules(self, rules):
         self.rules = rules
         return self
 
     def build(self):
-        self.project = Project(self.home, self.name, self.config)
+        self.project = Project(self.home, self.name, self.config, self.deploy_params)
         self.project.register_code_build(self.builder)
         self.project.register_validation_rules(self.rules)
 
@@ -49,10 +54,11 @@ class ProjectBuilder:
             raise Exception("You must register a source control system")
 
 class Project:
-    def __init__(self, home, name, config):
+    def __init__(self, home, name, config, deploy_params):
         self.home = home
         self.name = name
         self.config = config
+        self.deploy_params = deploy_params
 
         self.modules = []
         self.validation_rules = []

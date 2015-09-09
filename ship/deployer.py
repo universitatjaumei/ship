@@ -7,19 +7,31 @@ from validator import ValidationRuleExecutor
 from validator import JDBCUrlRemoteCheck
 
 class TomcatDeployer:
-    def __init__(self, environment):
+    def __init__(self, environment, params):
         self.environment = environment
+
+        if 'tomcat' in params:
+            self.params = params['tomcat']
+        else:
+            self.params = {}
 
     def deploy(self, module):
         tomcat = Tomcat(self.environment)
 
         tomcat.deploy(module)
         tomcat.shutdown()
-        tomcat.startup()
+
+        if not 'start_tomcat_after_deploy' in self.params or self.params['start_tomcat_after_deploy']:
+            tomcat.startup()
 
 class MonitDeployer:
-    def __init__(self, environment, executor):
+    def __init__(self, environment, executor, params):
         self.environment = environment
+
+        if 'monit' in params:
+            self.params = params['monit']
+        else:
+            self.params = {}
 
     def deploy(self, module):
         app = module.get_name()
@@ -36,27 +48,27 @@ class DeployerFactory:
     }
 
     @staticmethod
-    def build(type, environment):
-        return DeployerFactory._deployers[type](environment)
+    def build(type, environment, params):
+        return DeployerFactory._deployers[type](environment, params)
 
 
 class Deployer:
     def __init__(self, project):
         self.project = project
+        self.deploy_params = self.project.deploy_params
         #self.validations = ValidationRuleExecutor([JDBCUrlRemoteCheck])
 
     def validate(self, environment):
         self.validations.execute(self.project, environment)
 
-    def _deploy(self, module, environment):
-        deployer = DeployerFactory.build(module.get_type(), environment)
+    def _deploy(self, module, environment, params):
+        deployer = DeployerFactory.build(module.get_type(), environment, params)
         deployer.deploy(module)
 
     def deploy(self, environment):
         #self.validate(deploy_environment)
 
         for module in self.project.get_modules():
-            print module.get_type(), module.get_packaging(), module.get_name()
             deploy_environment = Environment(module.get_name())
             set_environment(deploy_environment)
-            self._deploy(module, deploy_environment)
+            self._deploy(module, deploy_environment, self.deploy_params)
