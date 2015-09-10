@@ -28,7 +28,7 @@ class Environment:
         return self.config["tomcat"]["base"]
 
     def get_tomcat_home(self):
-        return self.get_tomcat_base() + "/" + "apache-tomcat-" + self.get_tomcat_version()
+        return self.get_tomcat_base() + "/" + self.app
 
     def get_tomcat_memory(self):
         value = self.config["tomcat"]["memory"]
