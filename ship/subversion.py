@@ -17,17 +17,18 @@ class Subversion:
         self.logger.info("Checking out %s version from source control" % self.version)
 
         if os.path.isdir(self.home):
-           self.logger.warning("Cleaning work directory. Existing dir found")
-           shutil.rmtree(self.home)
+            self.logger.warning("Cleaning work directory. Existing dir found")
+            shutil.rmtree(self.home)
 
         if self.version == "trunk":
-           result = local("svn co " + self.url + "/" + self.version + " " + self.home + "/" + self.project)
+            self.logger.error("svn co " + self.url + "/" + self.version + " " + self.home + "/" + self.project)
+            result = local("svn co " + self.url + "/" + self.version + " " + self.home + "/" + self.project)
         else:
-           result = local("svn co " + self.url + "/tags/" + self.version + " " + self.home + "/" + self.project)
+            result = local("svn co " + self.url + "/tags/" + self.version + " " + self.home + "/" + self.project)
 
         if result.return_code != 0:
-           self.logger.error("Project repository not found in SVN with URL %s" % self.url)
-           raise SVNException()
+            self.logger.error("Project repository not found in SVN with URL %s" % self.url)
+            raise SVNException()
 
 if __name__ == "__main__":
     subversion = Subversion("svn://localhost/repos/SAMPLE", "/tmp/SAMPLE")
