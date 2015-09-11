@@ -7,7 +7,7 @@ DEBUG = True
 
 def set_environment(environment):
     fabric.api.env.host_string = environment.get_remote_connection_string()
-    fabric.api.env.port = environment.get_remote_port()
+    fabric.api.env.port = environment.get_tomcat_connection_port()
 
 def _get_level(debug):
     if DEBUG:

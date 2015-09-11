@@ -21,7 +21,6 @@ class Subversion:
             shutil.rmtree(self.home)
 
         if self.version == "trunk":
-            self.logger.error("svn co " + self.url + "/" + self.version + " " + self.home + "/" + self.project)
             result = local("svn co " + self.url + "/" + self.version + " " + self.home + "/" + self.project)
         else:
             result = local("svn co " + self.url + "/tags/" + self.version + " " + self.home + "/" + self.project)

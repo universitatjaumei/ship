@@ -10,16 +10,10 @@ class Environment:
         self.config = data[app]
 
     def get_remote_connection_string(self):
-        return self.config["user"] + "@" + self.config["host"]
-
-    def get_remote_host(self):
-        return self.config["host"]
-
-    def get_remote_port(self):
-        return self.config["port"]
+        return self.config["tomcat"]["connection"]["username"] + "@" + self.config["tomcat"]["connection"]["host"]
 
     def get_tomcat_host(self):
-        return self.config["tomcat"]["host"]
+        return self.config["tomcat"]["connection"]["host"]
 
     def get_tomcat_version(self):
         return self.config["tomcat"]["version"]
@@ -35,10 +29,13 @@ class Environment:
         return "-Xmx%sM -Xms%sM" % (value, value)
 
     def get_tomcat_username(self):
-        return self.config["tomcat"]["username"]
+        return self.config["tomcat"]["admin"]["username"]
 
     def get_tomcat_password(self):
-        return self.config["tomcat"]["password"]
+        return self.config["tomcat"]["admin"]["password"]
+
+    def get_tomcat_connection_port(self):
+        return self.config["tomcat"]["connection"]["port"]
 
     def get_tomcat_http_port(self):
         return self.config["tomcat"]["ports"]["http"]
