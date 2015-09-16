@@ -25,9 +25,9 @@ def local(command):
     with _get_settings():
         return fabric.operations.local(command, capture=True)
 
-def run(command):
+def run(command, pty=True):
     with _get_settings():
-        return fabric.operations.run(command)
+        return fabric.operations.run(command, pty=pty)
 
 def put(local_path, remote_path):
     with _get_settings():

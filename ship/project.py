@@ -39,13 +39,13 @@ class ProjectBuilder:
         self.project.register_code_build(self.builder)
         self.project.register_validation_rules(self.rules)
 
-        self.project.build()
+        res = self.project.build()
 
         return self
 
     def deploy(self):
         deployer = Deployer(self.project)
-        deployer.deploy()        
+        deployer.deploy()
         return self.project
 
     def _check_source_control(self):
@@ -83,7 +83,12 @@ class Project:
     def build(self):
         self.check_dependencies()
 
-        self.builder.build()
+        res = self.builder.build()
+
+        if res.stderr:
+            raise Exception(res.stderr)
+
+
         self.validate_quality_rules()
 
         self.build_module_list()

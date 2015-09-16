@@ -40,9 +40,9 @@ class Maven:
         return project_type
 
     def get_packaging(self):
-        packaging = self.pomxml.getElementsByTagName("packaging") 
+        packaging = self.pomxml.getElementsByTagName("packaging")
         if packaging is not None and len(packaging) > 0:
-           return packaging[0].childNodes[0].nodeValue 
+           return packaging[0].childNodes[0].nodeValue
 
     def is_multimodule(self):
         return self.get_pomxml_modules_node() != None
@@ -58,7 +58,9 @@ class Maven:
         return self.project_directory
 
     def build(self):
-        local("cd %s; mvn -DskipTests clean install" % self.project_directory)
+        return local("cd %s; mvn -DskipTests clean install" % self.project_directory)
+
+
 
 if __name__ == "__main__":
     maven = Maven("target/ADE/uji-ade/uji-ade-bd2storage")

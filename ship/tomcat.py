@@ -1,8 +1,7 @@
-import urllib2
-
 from logger import ShipLogger
 from time import sleep, strftime
 from commands import *
+import base64
 
 
 class Tomcat:
@@ -27,7 +26,7 @@ class Tomcat:
         self.memory = config.get_tomcat_memory()
 
     def startup(self):
-        result = run(self.home + "/bin/startup.sh")
+        result = run(self.home + "/bin/startup.sh", pty=False)
 
         if result.return_code != 0:
             error_message = "The server could not be started"
@@ -37,20 +36,25 @@ class Tomcat:
 
         times = 1
 
-        while not self._running() and times < 30:
+        while not self._running() and times < 10:
             sleep(10)
             puts(".")
             times += 1
+            self.logger.info("Could not start the server...")
 
-        if times == 30:
+
+        if times == 10:
             error_message = "Can not complete the server startup"
-            abort(error_message)
             self.logger.error(error_message)
+            abort(error_message)
 
         self.logger.info("Tomcat startup process completed")
 
     def shutdown(self):
-        run(self.home + "/bin/shutdown.sh -force")
+        try:
+            result = run(self.home + "/bin/shutdown.sh -force")
+        except Exception as e:
+            pass
 
     def deploy(self, module):
         appname = module.get_name()
@@ -59,6 +63,7 @@ class Tomcat:
         run("rm -rf " + self.home + "/work")
         run("rm -rf " + self.home + "/webapps/" + appname)
 
+        self.logger.info("Copying WAR to remote host: %s" % self.deploy_dir)
         put(local_path=warfile, remote_path=self.deploy_dir)
 
     def install(self):
@@ -149,21 +154,20 @@ class Tomcat:
 
         self.shutdown()
 
-        run("mv %s /tmp/%s.%s" % (self.home, self.home.split("/")[-1], current_date))
+        run("mv %s /tmp/%s.%s" % (seself.home, self.home.split("/")[-1], current_date))
 
     def _running(self):
         try:
-            url = "http://%s:%s/manager/text/list" % (self.host, self.port)
-            passman = urllib2.HTTPPasswordMgrWithDefaultRealm()
-            passman.add_password(None, url, self.user, self.password)
+            url = "http://%s:%s/manager/text/list" % (self.host, self.http_port)
+            hashed_password = base64.b64encode("%s:%s" % (self.user, self.password))
 
-            urllib2.install_opener(urllib2.build_opener(urllib2.HTTPBasicAuthHandler(passman)))
-
-            request = urllib2.Request(url)
-            data = urllib2.urlopen(request).read()
-
+            self.logger.info("curl -H 'Authorization: Basic %s' %s" % (hashed_password, url))
+            data = run("curl -H 'Authorization: Basic %s' %s" % (hashed_password, url))
             return data[:4] == "OK -"
         except:
+            import traceback
+            print traceback.format_exc()
+
             return False
 
 
