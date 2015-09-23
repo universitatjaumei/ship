@@ -3,13 +3,18 @@ import logging
 from colors import Colors
 
 class ShipLogger:
-    def __init__(self, loglevel):
-        logging.basicConfig(level=logging.getLevelName(loglevel), format="%(message)s")
+
+    def __init__(self):
         self.logger = logging.getLogger("ship")
 
     @staticmethod
-    def get_logger(loglevel="INFO"):
-        return ShipLogger(loglevel)
+    def setup_logger(loglevel="INFO", format="[ship] %(levelname)s %(message)s"):
+        logger = logging.getLogger("ship")
+        logging.basicConfig(level=logging.getLevelName(loglevel), format=format)
+
+    @staticmethod
+    def get_logger():
+        return ShipLogger()
 
     def info(self, msg):
         self.logger.info(Colors.OKGREEN + msg + Colors.ENDC)

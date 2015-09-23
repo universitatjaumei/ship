@@ -5,13 +5,13 @@ from commands import local
 from errors import SVNException
 
 class Subversion:
-    logger = ShipLogger.get_logger("INFO")
 
     def __init__(self, url, home, project, version="trunk"):
         self.url = url
         self.home = home
         self.project = project
         self.version = version
+        self.logger = ShipLogger.get_logger()
 
     def checkout(self):
         self.logger.info("Checking out %s version from source control" % self.version)

@@ -5,7 +5,6 @@ import base64
 
 
 class Tomcat:
-    logger = ShipLogger.get_logger("INFO")
 
     def __init__(self, config):
         self.host = config.get_tomcat_host()
@@ -24,6 +23,9 @@ class Tomcat:
 
         self.deploy_dir = config.get_tomcat_deploy_directory()
         self.memory = config.get_tomcat_memory()
+
+        self.logger = ShipLogger.get_logger()
+
 
     def startup(self):
         result = run(self.home + "/bin/startup.sh", pty=False)

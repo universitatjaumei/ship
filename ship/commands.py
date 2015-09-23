@@ -3,7 +3,7 @@ import fabric.api
 import fabric.utils
 import fabric.contrib.files
 
-DEBUG = True
+DEBUG = False
 
 def set_environment(environment):
     fabric.api.env.host_string = environment.get_remote_connection_string()
