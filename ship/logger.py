@@ -1,20 +1,23 @@
 import logging
-
+import sys
 from colors import Colors
 
 class ShipLogger:
-
-    def __init__(self):
+    def __init__(self, loglevel):
         self.logger = logging.getLogger("ship")
+        if  not self.logger.handlers:
+            self._setup_logger(loglevel)
+
+    def _setup_logger(self, loglevel, fmt="[ship] %(levelname)s %(message)s"):
+        logging.basicConfig(format=fmt)
+        handler = logging.StreamHandler(sys.stderr)
+        handler.setLevel(logging.INFO)
+        handler.setFormatter(logging.Formatter(fmt))
+        self.logger.addHandler(handler)
 
     @staticmethod
-    def setup_logger(loglevel="INFO", format="[ship] %(levelname)s %(message)s"):
-        logger = logging.getLogger("ship")
-        logging.basicConfig(level=logging.getLevelName(loglevel), format=format)
-
-    @staticmethod
-    def get_logger():
-        return ShipLogger()
+    def get_logger(loglevel="INFO"):
+        return ShipLogger(loglevel)
 
     def info(self, msg):
         self.logger.info(Colors.OKGREEN + msg + Colors.ENDC)

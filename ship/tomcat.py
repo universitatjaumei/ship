@@ -163,7 +163,6 @@ class Tomcat:
             url = "http://%s:%s/manager/text/list" % (self.host, self.http_port)
             hashed_password = base64.b64encode("%s:%s" % (self.user, self.password))
 
-            self.logger.info("curl -H 'Authorization: Basic %s' %s" % (hashed_password, url))
             data = run("curl -H 'Authorization: Basic %s' %s" % (hashed_password, url))
             return data[:4] == "OK -"
         except:
