@@ -24,7 +24,7 @@ class Tomcat:
         self.deploy_dir = config.get_tomcat_deploy_directory()
         self.memory = config.get_tomcat_memory()
 
-        self.logger = ShipLogger.get_logger()
+        self.logger = ShipLogger()
 
 
     def startup(self):

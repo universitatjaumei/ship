@@ -1,32 +1,44 @@
 import logging
+import StringIO
 import sys
 from colors import Colors
 
 class ShipLogger:
-    def __init__(self, loglevel):
-        self.logger = logging.getLogger("ship")
-        if  not self.logger.handlers:
-            self._setup_logger(loglevel)
-
-    def _setup_logger(self, loglevel, fmt="[ship] %(levelname)s %(message)s"):
-        logging.basicConfig(format=fmt)
-        handler = logging.StreamHandler(sys.stderr)
-        handler.setLevel(logging.INFO)
-        handler.setFormatter(logging.Formatter(fmt))
-        self.logger.addHandler(handler)
+    logger = logging.getLogger("ship")
 
     @staticmethod
-    def get_logger(loglevel="INFO"):
-        return ShipLogger(loglevel)
+    def _setup_handlers(loglevel="INFO", fmt="[ship] %(levelname)s %(message)s"):
+        ShipLogger.logger.setLevel(loglevel)
+        handler = logging.StreamHandler(sys.stderr)
+        handler.setFormatter(logging.Formatter(fmt))
+        ShipLogger.logger.addHandler(handler)
+        memory_handler = logging.StreamHandler(StringIO.StringIO())
+        memory_handler.setFormatter(logging.Formatter(fmt))
+        ShipLogger.logger.addHandler(memory_handler)
+
+    @staticmethod
+    def get_memory_stream():
+        if not ShipLogger.logger.handlers:
+            ShipLogger._setup_handlers()
+
+        return ShipLogger.logger.handlers[1].stream
+
+    def setup_logger_if_not_initialized(self):
+        if not self.__class__.logger.handlers:
+            self.__class__._setup_handlers()
 
     def info(self, msg):
-        self.logger.info(Colors.OKGREEN + msg + Colors.ENDC)
+        self.setup_logger_if_not_initialized()
+        self.__class__.logger.info(Colors.OKGREEN + msg + Colors.ENDC)
 
     def warning(self, msg):
-        self.logger.warning(Colors.WARNING + msg + Colors.ENDC)
+        self.setup_logger_if_not_initialized()
+        self.__class__.logger.warning(Colors.WARNING + msg + Colors.ENDC)
 
     def error(self, msg):
-        self.logger.error(Colors.FAIL + msg + Colors.ENDC)
+        self.setup_logger_if_not_initialized()
+        self.__class__.logger.error(Colors.FAIL + msg + Colors.ENDC)
 
     def success(self, msg):
-        self.logger.error(Colors.OKBLUE + msg + Colors.ENDC)
+        self.setup_logger_if_not_initialized()
+        self.__class__.logger.error(Colors.OKBLUE + msg + Colors.ENDC)

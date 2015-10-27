@@ -11,7 +11,7 @@ class Subversion:
         self.home = home
         self.project = project
         self.version = version
-        self.logger = ShipLogger.get_logger()
+        self.logger = ShipLogger()
 
     def checkout(self):
         self.logger.info("Checking out %s version from source control" % self.version)
