@@ -1,9 +1,11 @@
 from xml.dom import minidom
 from commands import *
+from logger import ShipLogger
 
 class Maven:
     def __init__(self, project_directory):
         self.reload(project_directory)
+        self.logger = ShipLogger()
 
     def reload(self, project_directory):
         self.project_directory = project_directory
@@ -58,6 +60,7 @@ class Maven:
         return self.project_directory
 
     def build(self):
+        self.logger.info("Building project with maven...")
         return local("cd %s; mvn -DskipTests clean install" % self.project_directory)
 
 

@@ -6,6 +6,10 @@ from colors import Colors
 class ShipLogger:
     logger = logging.getLogger("ship")
 
+    def __init__(self):
+        if not ShipLogger.logger.handlers:
+            ShipLogger._setup_handlers()
+
     @staticmethod
     def _setup_handlers(loglevel="INFO", fmt="[ship] %(levelname)s %(message)s"):
         ShipLogger.logger.setLevel(loglevel)

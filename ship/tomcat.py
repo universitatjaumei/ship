@@ -42,7 +42,7 @@ class Tomcat:
             sleep(10)
             puts(".")
             times += 1
-            self.logger.info("Could not start the server...")
+            self.logger.info("Trying to start the server...")
 
 
         if times == 10:
