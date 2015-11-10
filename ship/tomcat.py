@@ -40,7 +40,6 @@ class Tomcat:
 
         while not self._running() and times < 10:
             sleep(10)
-            puts(".")
             times += 1
             self.logger.info("Trying to start the server...")
 

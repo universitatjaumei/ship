@@ -62,6 +62,9 @@ class Project:
         self.modules = []
         self.validation_rules = []
 
+    def get_name(self):
+        return self.name
+
     def get_config(self):
         return self.config
 

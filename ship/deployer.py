@@ -69,6 +69,6 @@ class Deployer:
         #self.validate(deploy_environment)
 
         for module in self.project.get_modules():
-            deploy_environment = Environment(module.get_name())
-            set_environment(deploy_environment)
+            deploy_environment = Environment(self.project.get_name())
+            set_environment(deploy_environment, module.get_type())
             self._deploy(module, deploy_environment, self.deploy_params)
