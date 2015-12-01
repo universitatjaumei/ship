@@ -64,7 +64,7 @@ class Tomcat:
         run("rm -rf " + self.home + "/work")
         run("rm -rf " + self.home + "/webapps/" + appname)
 
-        self.logger.info("Copying WAR to remote host: %s" % self.deploy_dir)
+        self.logger.info("Copying WAR of module '" + appname + "' to remote host: %s" % self.deploy_dir)
         put(local_path=warfile, remote_path=self.deploy_dir)
 
     def install(self):
