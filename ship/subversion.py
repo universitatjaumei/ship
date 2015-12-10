@@ -13,6 +13,11 @@ class Subversion:
         self.version = version
         self.logger = ShipLogger()
 
+    def get_tags(self):
+        tagsList= local("svn list " + self.url + "/tags").split("\n")
+        tags = map(lambda x: x.replace("/", ""), tagsList)
+        return tags
+
     def checkout(self):
         self.logger.info("Checking out %s version from source control" % self.version)
 
