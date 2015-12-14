@@ -76,13 +76,15 @@ class CompiledPackageExistsValidationRule:
 
         if project.is_multimodule():
             if module.get_type() == "webapp":
-                file = project.get_directory() + "/" + project.get_name() + "/target/" + module.get_name() + "." + module.get_packaging()
-                raise Exception("Compiled package %s does not exists." % file)
+                path = project.get_directory() + "/" + project.get_name() + "/target/" + module.get_name() + "." + module.get_packaging()
+                if not os.path.exists(path):
+                    raise Exception("Compiled package %s does not exists." % file)
 
         else:
             if module.get_type() == "webapp":
-                file = project.get_directory() + "/target/" + module.get_name() + "." + module.get_packaging()
-                raise Exception("Compiled package %s does not exists." % file)
+                path = project.get_directory() + "/target/" + module.get_name() + "." + module.get_packaging()
+                if not os.path.exists(path):
+                    raise Exception("Compiled package %s does not exists." % file)
 
         ## TODO
         #elif module.get_type() == "service":
