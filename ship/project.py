@@ -3,6 +3,8 @@ from validator import *
 from deployer import Deployer
 from maven import Maven
 from subversion import Subversion
+from logger import ShipLogger
+import traceback
 
 class ProjectBuilder:
     def __init__(self, home, name, config):
@@ -61,6 +63,7 @@ class Project:
 
         self.modules = []
         self.validation_rules = []
+        self.logger = ShipLogger()
 
     def get_name(self):
         return self.name
@@ -91,10 +94,9 @@ class Project:
         if res.stderr:
             raise Exception(res.stderr)
 
-
+        self.build_module_list()
         self.validate_quality_rules()
 
-        self.build_module_list()
 
     def build_module_list(self):
         if self.builder.is_multimodule():
@@ -105,8 +107,12 @@ class Project:
             self._add_module(self.builder)
 
     def validate_quality_rules(self):
-        validator = ValidationRuleExecutor(self.validation_rules)
-        validator.validate(self)
+        try:
+            validator = ValidationRuleExecutor(self.validation_rules)
+            validator.validate(self)
+        except Exception as e:
+            self.logger.error(traceback.format_exc())
+            raise(e)
 
     def check_dependencies(self):
         self.check_code_build()
@@ -124,5 +130,5 @@ class Project:
         if builder.get_type() == None:
             return
 
-        new_module = Module(self, builder.get_type(), builder.get_packaging(), builder.get_final_name(), submodule)
+        new_module = Module(self, builder.get_type(), builder.get_packaging(), builder.get_final_name(), builder.get_version(), submodule)
         self.modules.append(new_module)

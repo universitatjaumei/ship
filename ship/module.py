@@ -1,11 +1,15 @@
 class Module:
-    def __init__(self, project, type, packaging, final_name, submodule=None):
+    def __init__(self, project, module_type, packaging, final_name, version, submodule=None):
         self.project = project
-        self.type = type
+        self.type = module_type
         self.packaging = packaging
         self.final_name = final_name
+        self.version = version
         self.submodule = submodule
 
+    def get_version(self):
+        return self.version
+        
     def get_type(self):
         return self.type
 

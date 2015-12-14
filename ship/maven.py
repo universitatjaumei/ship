@@ -22,20 +22,24 @@ class Maven:
 
         return modules[0]
 
+    def get_version(self):
+        version = self.pomxml.getElementsByTagName("version")
+        if version is not None and len(version) > 0:
+            return version[0].childNodes[0].nodeValue
+
     def get_final_name(self):
         finalName = self.pomxml.getElementsByTagName("finalName")
         if finalName is not None and len(finalName) > 0:
             return finalName[0].childNodes[0].nodeValue
 
     def get_type(self):
-        itemlist = self.pomxml.getElementsByTagName("packaging")
-
         project_type = None
+        itemlist = self.pomxml.getElementsByTagName("packaging")
 
         if len(itemlist) == 1 and itemlist[0].childNodes[0].nodeValue == "war":
             project_type = "webapp"
         else:
-            itemlist = self.pomxml.getElementsByTagName("uji.tipo")
+            itemlist = self.pomxml.getElementsByTagName("uji.deploy.type")
             if len(itemlist) == 1 and itemlist[0].childNodes[0].nodeValue:
                 project_type = itemlist[0].childNodes[0].nodeValue
 

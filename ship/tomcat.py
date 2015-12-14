@@ -41,7 +41,7 @@ class Tomcat:
         while not self._running() and times < 10:
             sleep(10)
             times += 1
-            self.logger.info("Trying to start the server...")
+            self.logger.info("Trying to start the tomcat server...")
 
 
         if times == 10:

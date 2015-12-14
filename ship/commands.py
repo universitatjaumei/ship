@@ -7,12 +7,12 @@ DEBUG = False
 
 def set_environment(environment, type):
     if type == "webapp":
-        fabric.api.env.host_string = environment.get_remote_connection_string()
+        fabric.api.env.host_string = environment.get_tomcat_remote_connection_string()
         fabric.api.env.port = environment.get_tomcat_connection_port()
 
-    if type == "servicio":
-        fabric.api.env.host_string = environment.get_monit_remote_connection_string()
-        fabric.api.env.port = environment.get_monit_connection_port()
+    if type == "service":
+        fabric.api.env.host_string = environment.get_service_remote_connection_string()
+        fabric.api.env.port = environment.get_service_connection_port()
 
 def _get_level(debug):
     if DEBUG:

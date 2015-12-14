@@ -5,6 +5,8 @@ from environment import Environment
 from commands import set_environment
 from validator import ValidationRuleExecutor
 from validator import JDBCUrlRemoteCheck
+from logger import ShipLogger
+import traceback
 
 class TomcatDeployer:
     def __init__(self, environment, params):
@@ -25,8 +27,9 @@ class TomcatDeployer:
             tomcat.startup()
 
 class MonitDeployer:
-    def __init__(self, environment, executor, params):
+    def __init__(self, environment, params):
         self.environment = environment
+        self.logger = ShipLogger()
 
         if 'monit' in params:
             self.params = params['monit']
@@ -34,17 +37,15 @@ class MonitDeployer:
             self.params = {}
 
     def deploy(self, module):
-        app = module.get_name()
-
-        monit = Monit(self.environment.get_monit_home())
-        monit.shutdown_service(app)
-        monit.deploy(app, module.get_compiled_filename())
-        monit.startup_service(app)
+        monit = Monit(self.environment.get_service_base())
+        monit.shutdown_service(module)
+        monit.deploy(module)
+        monit.startup_service(module)
 
 class DeployerFactory:
     _deployers = {
         "webapp": TomcatDeployer,
-        "servicio": MonitDeployer
+        "service": MonitDeployer
     }
 
     @staticmethod
@@ -56,19 +57,23 @@ class Deployer:
     def __init__(self, project):
         self.project = project
         self.deploy_params = self.project.deploy_params
-        #self.validations = ValidationRuleExecutor([JDBCUrlRemoteCheck])
+        self.validations = ValidationRuleExecutor([JDBCUrlRemoteCheck])
+        self.logger = ShipLogger()
 
-    def validate(self, environment):
-        self.validations.execute(self.project, environment)
+    def validate(self):
+        try:
+            self.validations.validate(self.project)
+        except Exception as e:
+            self.logger.error(traceback.format_exc())
+            raise(e)
 
     def _deploy(self, module, environment, params):
         deployer = DeployerFactory.build(module.get_type(), environment, params)
         deployer.deploy(module)
 
     def deploy(self):
-        #self.validate(deploy_environment)
-
         for module in self.project.get_modules():
             deploy_environment = Environment(self.project.get_name())
             set_environment(deploy_environment, module.get_type())
+            self.validate()
             self._deploy(module, deploy_environment, self.deploy_params)

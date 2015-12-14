@@ -7,17 +7,19 @@ from colors import Colors
 
 class PomXMLValidationRule:
     def execute(self, project, module):
-        if module.get_type() in ['webapp', 'servicio']:
+        if module.get_type() in ['webapp', 'service']:
             if not module.get_name():
                 raise Exception("The 'finalName' attribute couldn't be found in pom.xml file")
+        else:
+            raise Exception("The module type '" + module.get_type() + "' is not valid.'")
 
 class JDBCUrlRemoteCheck:
     def execute(self, project, environment):
-        app_properties = run("cat /etc/uji/%s/app.properties" % project.get_project_id())
+        app_properties = run("cat /etc/uji/%s/app.properties" % project.get_name())
         JDBCURL = """uji.db.jdbcUrl=jdbc:oracle:thin:@(DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = 150.128.192.222)(PORT = 1521)) (ADDRESS = (PROTOCOL = TCP)(HOST = 150.128.192.223)(PORT = 1521)) (ADDRESS = (PROTOCOL = TCP)(HOST = 150.128.192.224)(PORT = 1521)) (LOAD_BALANCE = yes) (FAILOVER = yes)) (CONNECT_DATA = (SERVICE_NAME = ujiapps.uji.es)))"""
 
         if app_properties.find(JDBCURL) == -1:
-            raise Exception("The JDBCUrl syntax in remote environment /etc/uji/%s/app.properties is not valid." % project.get_project_id())
+            raise Exception("The JDBCUrl syntax in remote environment /etc/uji/%s/app.properties is not valid." % project.get_name())
 
 class ConsoleLogValidationRule:
     def execute(self, project, module):
@@ -71,10 +73,21 @@ class ConfigFileValidationRule:
 
 class CompiledPackageExistsValidationRule:
     def execute(self, project, module):
-        file = project.get_directory() + "/target/" + module.get_name() + "." + module.get_packaging()
 
-        if module.get_type() in ['webapp', 'servicio'] and not os.path.isfile(file):
-            raise Exception("Compiled package %s does not exists." % file)
+        if project.is_multimodule():
+            if module.get_type() == "webapp":
+                file = project.get_directory() + "/" + project.get_name() + "/target/" + module.get_name() + "." + module.get_packaging()
+                raise Exception("Compiled package %s does not exists." % file)
+
+        else:
+            if module.get_type() == "webapp":
+                file = project.get_directory() + "/target/" + module.get_name() + "." + module.get_packaging()
+                raise Exception("Compiled package %s does not exists." % file)
+
+        ## TODO
+        #elif module.get_type() == "service":
+        #    file = project.get_directory() + "/target/" + module.get_name() + "." + module.get_packaging()
+        #    raise Exception("Compiled package %s does not exists." % file)
 
 class WebXmlValidationRule:
     def execute(self, project, module):

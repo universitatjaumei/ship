@@ -9,7 +9,7 @@ class Environment:
         self.app = app
         self.config = data[app]
 
-    def get_remote_connection_string(self):
+    def get_tomcat_remote_connection_string(self):
         return self.config["tomcat"]["connection"]["username"] + "@" + self.config["tomcat"]["connection"]["host"]
 
     def get_tomcat_host(self):
@@ -55,5 +55,11 @@ class Environment:
     def get_tomcat_deploy_directory(self):
         return self.get_tomcat_home() + "/webapps"
 
-    def get_monit_home(self):
-        return self.config["monit"]["home"]
+    def get_service_base(self):
+        return self.config["service"]["base"]
+
+    def get_service_remote_connection_string(self):
+        return self.config["service"]["connection"]["username"] + "@" + self.config["service"]["connection"]["host"]
+
+    def get_service_connection_port(self):
+        return self.config["service"]["connection"]["port"]
