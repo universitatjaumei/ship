@@ -9,12 +9,15 @@ class Module:
 
     def get_version(self):
         return self.version
-        
+
     def get_type(self):
         return self.type
 
     def get_packaging(self):
         return self.packaging
+
+    def get_submodule(self):
+        return self.submodule
 
     def get_name(self):
         return self.final_name

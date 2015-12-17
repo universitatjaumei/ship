@@ -47,7 +47,6 @@ class Monit:
         res = res.split("\r\n")
 
         index = res.index("Process '%s'" % name)
-        self.logger.error(res[index])
         status = res[index + 1].strip()
         status = re.sub(' +', ' ', status)
 

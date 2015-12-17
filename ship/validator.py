@@ -76,20 +76,20 @@ class CompiledPackageExistsValidationRule:
 
         if project.is_multimodule():
             if module.get_type() == "webapp":
-                path = project.get_directory() + "/" + project.get_name() + "/target/" + module.get_name() + "." + module.get_packaging()
+                path = project.get_directory() + "/" + module.get_submodule() + "/target/" + module.get_name() + "." + module.get_packaging()
                 if not os.path.exists(path):
-                    raise Exception("Compiled package %s does not exists." % file)
+                    raise Exception("Compiled package %s does not exists" % path)
+            elif module.get_type() == "service":
+                path = project.get_directory() + "/" + module.get_submodule() + "/target/" + module.get_name() + ".jar"
+                if not os.path.exists(path):
+                    raise Exception("Compiled package %s does not exists" % path)
 
         else:
             if module.get_type() == "webapp":
                 path = project.get_directory() + "/target/" + module.get_name() + "." + module.get_packaging()
                 if not os.path.exists(path):
-                    raise Exception("Compiled package %s does not exists." % file)
+                    raise Exception("Compiled package %s does not exists." % path)
 
-        ## TODO
-        #elif module.get_type() == "service":
-        #    file = project.get_directory() + "/target/" + module.get_name() + "." + module.get_packaging()
-        #    raise Exception("Compiled package %s does not exists." % file)
 
 class WebXmlValidationRule:
     def execute(self, project, module):
