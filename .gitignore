@@ -1,6 +1,7 @@
 *.pyc
 .idea
 ship.egg-info
+uji_ship.egg-info
 build
 dist
 webapp/ship
